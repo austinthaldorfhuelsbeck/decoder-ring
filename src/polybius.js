@@ -16,6 +16,12 @@
 function polybius(input, encode = true) {
   const punctuation = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
   let result = "";
+  // catches an error if input is empty
+  try {
+    if (!input) throw "No input provided";
+  } catch (error) {
+    return `ERROR: ${error}`;
+  }
 
   if (encode) {
     //// ENCODER
@@ -40,10 +46,12 @@ function polybius(input, encode = true) {
     }, "");
   } else {
     //// DECODER
-    // this time, split by word
+    // this time, split by word, check if even
     const inputArray = input.split(" ");
-    const decodedArray = inputArray.map((word) => {
-      // break word array into pieces of 2 chars each
+    for (let word of inputArray) {
+      if (word.length % 2 !== 0) return false;
+      //convert to array, break word array into pieces of 2 chars each
+      const inputArray = word.split("");
       let wordArray = word.match(/.{1,2}/g);
 
       // decode each char in the word
@@ -61,14 +69,11 @@ function polybius(input, encode = true) {
         return acc + String.fromCharCode(charCode);
       }, "");
 
-      return wordDecoded;
-    });
-
-    // join back together for finished string
-    result = decodedArray.join(" ");
+      // join back together for finished string
+      result += `${wordDecoded} `;
+    }
   }
-
-  return result;
+  return result.trim();
 }
 
 module.exports = polybius;

@@ -43,7 +43,6 @@ describe("polybius square", () => {
     expect(result).to.eql(expected);
   });
   it("catches an error if input is not provided", () => {
-    const errorMessage = "ERROR: ";
-    expect(poly().includes(errorMessage)).to.be.true;
+    expect(poly()).to.include("ERROR: ");
   });
 });
