@@ -32,6 +32,7 @@ function substitution(input, alphabet, encode = true) {
     return false;
 
   // convert the input to lowercase and to an array by letter
+  // alphabet should be lowercase
   inputArray = input.toLowerCase().split("");
   alphabet = alphabet.toLowerCase();
 
@@ -40,13 +41,22 @@ function substitution(input, alphabet, encode = true) {
     if (char === " ") return acc + " ";
 
     // encode or decode
-    const charCode = encode
+
+    /*     const charCode = encode
       ? char.charCodeAt() - 97
       : alphabet.indexOf(char) + 97;
 
     // find the character to concatenate to acc
     if (encode) return acc + alphabet[charCode].toLowerCase();
-    return acc + String.fromCharCode(charCode);
+    return acc + String.fromCharCode(charCode); */
+
+    if (encode) {
+      const charCode = char.charCodeAt() - 97;
+      return acc + alphabet[charCode].toLowerCase();
+    } else {
+      const charCode = alphabet.indexOf(char) + 97;
+      return acc + String.fromCharCode(charCode);
+    }
   }, "");
 
   // return!
