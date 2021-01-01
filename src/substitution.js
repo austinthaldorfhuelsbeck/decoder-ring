@@ -10,6 +10,17 @@
 // this is the unicode value of the result
 //////
 
+function hasUniqueLetters(input) {
+  const usedLetters = {};
+
+  for (const letter of input) {
+    if (usedLetters[letter]) return false;
+    usedLetters[letter] = true;
+  }
+
+  return true;
+}
+
 function substitution(input, alphabet, encode = true) {
   // handle errors
   if (!alphabet || typeof alphabet !== "string" || alphabet.length !== 26)
