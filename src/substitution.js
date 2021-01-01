@@ -23,7 +23,12 @@ function hasUniqueLetters(input) {
 
 function substitution(input, alphabet, encode = true) {
   // handle errors
-  if (!alphabet || typeof alphabet !== "string" || alphabet.length !== 26)
+  if (
+    !alphabet ||
+    typeof alphabet !== "string" ||
+    alphabet.length !== 26 ||
+    !hasUniqueLetters(alphabet)
+  )
     return false;
 
   // convert the input to lowercase and to an array by letter
