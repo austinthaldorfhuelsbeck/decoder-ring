@@ -22,34 +22,31 @@ function caesar(input, shift, encode = true) {
   try {
     if (!input) throw "ERROR: No input provided!";
     inputArray = input.toLowerCase().split("");
+
+    // return false if there's a problem with shift
+    if (!shift || shift < -25 || shift > 25) return false;
+    // flip shift if decoding
+    if (!encode) shift *= -1;
+
+    const resultArray = inputArray.map((char) => {
+      // convert to unicode
+      // if punctuation, skip
+      const charCode = char.charCodeAt();
+      if (charCode < 97 || charCode > 122) return char;
+
+      // calculate shiftDelta:
+      // this # represents the distance from "a" (97) if positive,
+      // or the distance from "{" (123) if negative
+      const shiftDelta = (charCode + shift - 97) % 26;
+      if (shiftDelta >= 0) return String.fromCharCode(shiftDelta + 97);
+      return String.fromCharCode(shiftDelta + 123);
+    });
+
+    // returns a string
+    return resultArray.join("");
   } catch (error) {
     return `ERROR: ${error}`;
   }
-
-  // return false if there's a problem with shift
-  if (!shift || shift < -25 || shift > 25) return false;
-  // flip shift if decoding
-  if (!encode) shift *= -1;
-
-  const punctuation = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
-
-  const resultArray = inputArray.map((char) => {
-    // if punctuation, skip
-    if (punctuation.includes(char)) return char;
-
-    // convert to unicode
-    const charCode = char.charCodeAt();
-
-    // calculate shiftDelta:
-    // this # represents the distance from "a" (97) if positive,
-    // or the distance from "{" (123) if negative
-    const shiftDelta = (charCode + shift - 97) % 26;
-    if (shiftDelta >= 0) return String.fromCharCode(shiftDelta + 97);
-    return String.fromCharCode(shiftDelta + 123);
-  });
-
-  // returns a string
-  return resultArray.join("");
 }
 
 module.exports = caesar;

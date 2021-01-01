@@ -13,67 +13,80 @@
      if (column === 0) column = 5
 */
 
-function polybius(input, encode = true) {
-  const punctuation = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+function polyEncode(input) {
+  //// ENCODER
+  const inputArray = input.toLowerCase().split("");
+  const result = inputArray.reduce((acc, char) => {
+    const charCode = char.charCodeAt();
+    // ignore punctuation, return whitespace
+    if (charCode == 32) return acc + char;
+    if (charCode < 97 || charCode > 122) return acc;
+
+    // convert to unicode, subtract 96
+    // if j or above, subtract 1 extra
+    let charNum = charCode - 96;
+    if (charNum >= 10) charNum--;
+
+    // find row + column
+    let row = Math.floor((charNum + 4) / 5);
+    let column = charNum % 5;
+    if (column === 0) column = 5;
+
+    // concatenate onto last result
+    return acc + column.toString() + row.toString();
+  }, "");
+  return result;
+}
+
+function polyDecode(input) {
+  //// DECODER
   let result = "";
+  // this time, split by word
+  const inputArray = input.split(" ");
+
+  // for each word...
+  for (let word of inputArray) {
+    // check if even
+    if (word.length % 2 !== 0) return false;
+
+    // convert to array, break word array into pieces of 2 chars each
+    let wordArray = [];
+    for (let i = 0; i < word.length; i += 2) {
+      wordArray.push(word.substr(i, 2));
+    }
+
+    // decode each char in the word with reduce
+    const wordDecoded = wordArray.reduce((acc, char) => {
+      const column = parseInt(char[0]);
+      const row = parseInt(char[1]);
+
+      // convert from unicode,
+      // if j or above, add 1 extra
+      let charCode = (row - 1) * 5 + column + 96;
+      if (charCode > 105) charCode++;
+
+      // return early in case of i/j
+      if (charCode === 105) return acc + "i/j";
+      return acc + String.fromCharCode(charCode);
+    }, "");
+
+    // join back together for finished string
+    result += `${wordDecoded} `;
+  }
+  // there's one extra whitespace at the end!
+  return result.trim();
+}
+
+function polybius(input, encode = true) {
   // catches an error if input is empty
   try {
     if (!input) throw "No input provided";
+    // encode or decode
+    const result = encode ? polyEncode(input) : polyDecode(input);
+    return result;
   } catch (error) {
     return `ERROR: ${error}`;
   }
-
-  if (encode) {
-    //// ENCODER
-    const inputArray = input.toLowerCase().split("");
-    result = inputArray.reduce((acc, char) => {
-      // ignore punctuation, return whitespace
-      if (punctuation.includes(char)) return acc + "";
-      if (char === " ") return acc + char;
-
-      // convert to unicode, subtract 96
-      // if j or above, subtract 1 extra
-      let charNum = char.charCodeAt() - 96;
-      if (charNum >= 10) charNum--;
-
-      // find row + column
-      let row = Math.floor((charNum + 4) / 5);
-      let column = charNum % 5;
-      if (column === 0) column = 5;
-
-      // concatenate onto last result
-      return acc + column.toString() + row.toString();
-    }, "");
-  } else {
-    //// DECODER
-    // this time, split by word, check if even
-    const inputArray = input.split(" ");
-    for (let word of inputArray) {
-      if (word.length % 2 !== 0) return false;
-      //convert to array, break word array into pieces of 2 chars each
-      const inputArray = word.split("");
-      let wordArray = word.match(/.{1,2}/g);
-
-      // decode each char in the word
-      const wordDecoded = wordArray.reduce((acc, char) => {
-        const column = parseInt(char[0]);
-        const row = parseInt(char[1]);
-
-        // convert from unicode,
-        // if j or above, add 1 extra
-        let charCode = (row - 1) * 5 + column + 96;
-        if (charCode > 105) charCode++;
-
-        // return early in case of i/j
-        if (charCode === 105) return acc + "i/j";
-        return acc + String.fromCharCode(charCode);
-      }, "");
-
-      // join back together for finished string
-      result += `${wordDecoded} `;
-    }
-  }
-  return result.trim();
 }
 
 module.exports = polybius;
